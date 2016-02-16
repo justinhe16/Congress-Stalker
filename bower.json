@@ -20,7 +20,6 @@
     "tests"
   ],
   "dependencies": {
-    "material-design-lite": "~1.1.1",
-    "material-design-icons":"~2.2.0"
+    "material-design-lite": "~1.1.1"
   }
 }
