@@ -1,0 +1,26 @@
+{
+  "name": "Congress-Stalker",
+  "version": "0.0.0",
+  "homepage": "https://github.com/justinhe16/Congress-Stalker",
+  "authors": [
+    "Justin He <justinhe16@gmail.com>",
+    "David Burgstahler <davidburgstahler@gmail.com>"
+  ],
+  "description": "stalk your favorite congressmen",
+  "main": "server.js",
+  "keywords": [
+    "congress"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "material-design-lite": "~1.1.1",
+    "material-design-icons":"~2.2.0"
+  }
+}
