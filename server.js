@@ -12,7 +12,8 @@ var app      = express();
 // configuration ===============================================================
 // require('./config/passport')(passport); // pass passport for configuration
 
-app.use(express.static("./public")); // sets standard files things. i.e /public/imgs will be /imgs
+app.use(express.static("static")); // sets standard files things. i.e /public/imgs will be /imgs
+app.use('/bower_components', express.static("bower_components")); // sets standard files things. i.e /public/imgs will be /imgs
 
     app.use(morgan('dev')); // log every request to the console
     app.use(cookieParser()); // read cookies (needed for auth)

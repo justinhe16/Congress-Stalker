@@ -45,8 +45,6 @@ gulp.task("watch-less", function() {
 });
 
 gulp.task("watch", function() {
- gulp.watch(["./shared/*.js",
-             "./static/js/*.js",
-             "./static/js/game/*.js"], ["js"]);
+ gulp.watch(["./static/js/*.js"], ["js"]);
   gulp.watch("./static/less/*.less", ["less"]);
 });
