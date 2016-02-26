@@ -1,4 +1,5 @@
 //DEPENDENCIES 
+var https = require('https');
 var express  = require('express');
 var passport = require('passport');
 var flash    = require('connect-flash');
@@ -8,6 +9,10 @@ var bodyParser   = require('body-parser');
 var methodOverride = require('method-override');
 var session      = require('express-session');
 var app      = express();
+var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database('congress_stalker.db');
+db.run("PRAGMA foreign_keys = ON;");
+//HEADERS
 
 // configuration ===============================================================
 // require('./config/passport')(passport); // pass passport for configuration
