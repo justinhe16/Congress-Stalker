@@ -52,7 +52,7 @@ app.get('/searchLegislator', function(req,res) {
 
         responce.on('data', function(data) {
             body += data;
-            console.log("body: "+body);
+           
         });//data
 
         
@@ -66,7 +66,7 @@ app.get('/searchLegislator', function(req,res) {
                     twitter: data.results[i].twitter_id,
                     party: data.results[i].party
                 }
-            legislators.push(senator);
+                legislators.push(senator);
             }
 
             res.render('legislators', {zipcode: zipcode, legislators: legislators});
@@ -77,22 +77,27 @@ app.get('/searchLegislator', function(req,res) {
 app.get('/searchBills/:first/:last', function(req,res) {
     var first_name = req.params.first;
     var last_name = req.params.last;
-    var bills = [];
     var request = https.get("https://congress.api.sunlightfoundation.com/bills/search?apikey=0fadfc20cbb6484e8bf8295acce8c37d&sponsor.first_name="+first_name+"&sponsor.last_name="+last_name, function(responce) {
-        for(var i = 0; i < responce.count; i++) {
-            bill = {
-                name: responce.results[i].official_title,
-                date: responce.results[i].last_version_on,
-                sponsor_first_name: first_name,
-                sponsor_last_name: last_name
-            }
-            bills.push(bill);
-        }
+        var body = '';
+        responce.on('data', function(data) {
+            body += data;
+        });//data
+        
         responce.on('end', function() {
+            var bills = [];
+            var data = JSON.parse(body);
+            for(var i = 0; i < data.count; i++) {
+                bill = {
+                    name: data.results[i].official_title,
+                    date: data.results[i].last_version_on,
+                    sponsor_first_name: first_name,
+                    sponsor_last_name: last_name
+                }
+                bills.push(bill);
+            }
             res.render('billResults', {first_name: first_name, last_name: last_name, bills: bills});
         });
     });
-
 });
 
 app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legislator information array
