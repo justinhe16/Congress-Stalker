@@ -6,24 +6,37 @@ app.get('/', function(req, res){
 });
 
 app.get('/searchLegislator', function(req,res) {
-    console.log(req.body.zip);
+    console.log("zip: "+req.body.zip);
     var zipcode = req.body.zip;//parseInt(req.params.zip);
     var legislators = [];
     var request = https.get("https://congress.api.sunlightfoundation.com/legislators/locate?apikey=0fadfc20cbb6484e8bf8295acce8c37d&zip="+req.body.zip, function(responce) {
-        for(var i = 0; i < responce.count; i++) {
-            senator = {
-                first_name: responce.results[i].first_name,
-                last_name: responce.results[i].last_name,
-                twitter: responce.results[i].twitter_id,
-                party: responce.results[i].party
-            }
-            legislators.push(senator);
-        }
+        var body = '';
+
+        responce.on('data', function(data) {
+            body += data;
+            console.log("body: "+body);
+        });//data
+
+        
         responce.on('end', function() {
-            res.render('legislators.ejs', {zipcode: zipcode, legislators: legislators});
-        });
+            var legislators = [];
+            var data = JSON.parse(body);
+            for(var i = 0; i < data.count; i++) {
+                senator = {
+                    first_name: data.results[i].first_name,
+                    last_name: data.results[i].last_name,
+                    twitter: data.results[i].twitter_id,
+                    party: data.results[i].party
+                }
+            legislators.push(senator);
+            }
+
+            res.render('legislators', {zipcode: zipcode, legislators: legislators});
+        });//end
     });
 });
+
+
 
 app.get('/searchBills/:first/:last', function(req,res) {
     var first_name = req.params.first;
