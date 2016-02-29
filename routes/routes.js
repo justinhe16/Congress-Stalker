@@ -1,14 +1,16 @@
 module.exports = function(app, passport) {
 
+
 app.get('/', function(req, res){
     res.render('index.ejs');
-}
+});
 
 app.get('/searchLegislator', function(req,res) {
+    console.log(req.body.zip);
     var zipcode = req.body.zip;//parseInt(req.params.zip);
     var legislators = [];
     var request = https.get("https://congress.api.sunlightfoundation.com/legislators/locate?apikey=0fadfc20cbb6484e8bf8295acce8c37d&zip="+req.body.zip, function(responce) {
-        for(var i = 0; i < responce.count, i++) {
+        for(var i = 0; i < responce.count; i++) {
             senator = {
                 first_name: responce.results[i].first_name,
                 last_name: responce.results[i].last_name,
@@ -18,7 +20,7 @@ app.get('/searchLegislator', function(req,res) {
             legislators.push(senator);
         }
         responce.on('end', function() {
-            res.render('legislators', {zipcode: zipcode, legislators: legislators});
+            res.render('legislators.ejs', {zipcode: zipcode, legislators: legislators});
         });
     });
 });
@@ -28,9 +30,9 @@ app.get('/searchBills/:first/:last', function(req,res) {
     var last_name = req.params.last;
     var bills = [];
     var request = https.get("https://congress.api.sunlightfoundation.com/bills/search?apikey=0fadfc20cbb6484e8bf8295acce8c37d&sponsor.first_name="+first_name+"&sponsor.last_name="+last_name, function(responce) {
-        for(var i = 0; i < responce.count, i++) {
+        for(var i = 0; i < responce.count; i++) {
             bill = {
-                name = responce.results[i].official_title,
+                name: responce.results[i].official_title,
                 date: responce.results[i].last_version_on,
                 sponsor_first_name: first_name,
                 sponsor_last_name: last_name
@@ -97,7 +99,7 @@ app.post('/saveBill', function(req,res) {//use AJAX
     res.write("saved");
 });
 
-app.get('/viewSaved/:id', function(req.res) {
+app.get('/viewSaved/:id', function(req,res) {
     var user_id = parseInt(req.params.id);
     var legIds = [];
     db.run("SELECT leg_id from user_leg WHERE user_id = "+user_id, 
