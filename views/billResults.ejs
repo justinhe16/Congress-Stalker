@@ -1,0 +1,23 @@
+<% include header.ejs %>
+<div class="container">
+<h1 style="margin-top: 5%">Bills sponsored by <%= first_name %> <%= last_name %></h1>
+      <div class="row">
+      <% for(var j = 0; j < bills.length; j++) {  %>
+        <div class="col s12 m6">
+          <div class="card blue darken-1">
+            <div class="card-content white-text">
+              <% if (bills[j].shortname == null) { %>
+              <span class="card-title"><%= bills[j].name %></span>
+              <% } else { %>
+              <span class="card-title"><%= bills[j].shortname %></span>
+              <% } %>
+              <p><%= bills[j].date %></p>
+            </div>
+            <div class="card-action">
+            <a class="blue waves-effect waves-light btn">Save Bill</a>
+            </div>
+          </div>
+        </div>
+        <% } %>
+      </div>
+</div>

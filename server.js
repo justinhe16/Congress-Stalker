@@ -49,13 +49,10 @@ app.get('/searchLegislator', function(req,res) {
     var legislators = [];
     var request = https.get("https://congress.api.sunlightfoundation.com/legislators/locate?apikey=0fadfc20cbb6484e8bf8295acce8c37d&zip="+req.query.zip, function(responce) {
         var body = '';
-
         responce.on('data', function(data) {
             body += data;
-            console.log("body: "+body);
         });//data
 
-        
         responce.on('end', function() {
             var legislators = [];
             var data = JSON.parse(body);
@@ -74,21 +71,31 @@ app.get('/searchLegislator', function(req,res) {
     });
 });
 
-app.get('/searchBills/:first/:last', function(req,res) {
-    var first_name = req.params.first;
-    var last_name = req.params.last;
+app.get('/searchBills', function(req,res) {
+    console.log(req.query.first);
+    console.log(req.query.last);
+    var first_name = req.query.first;
+    var last_name = req.query.last;
     var bills = [];
-    var request = https.get("https://congress.api.sunlightfoundation.com/bills/search?apikey=0fadfc20cbb6484e8bf8295acce8c37d&sponsor.first_name="+first_name+"&sponsor.last_name="+last_name, function(responce) {
-        for(var i = 0; i < responce.count; i++) {
+    var request = https.get("https://congress.api.sunlightfoundation.com/bills/search?apikey=0fadfc20cbb6484e8bf8295acce8c37d&sponsor.first_name="+req.query.first+"&sponsor.last_name="+req.query.last, function(responce) {
+        var body = '';
+        responce.on('data', function(data) {
+            body += data;
+        });//data
+
+        responce.on('end', function() {
+        var bills = [];
+        var data = JSON.parse(body);
+        for(var i = 0; i < data.results.length; i++) {
             bill = {
-                name: responce.results[i].official_title,
-                date: responce.results[i].last_version_on,
+                shortname: data.results[i].short_title,
+                name: data.results[i].official_title,
+                date: data.results[i].last_version_on,
                 sponsor_first_name: first_name,
                 sponsor_last_name: last_name
             }
             bills.push(bill);
         }
-        responce.on('end', function() {
             res.render('billResults', {first_name: first_name, last_name: last_name, bills: bills});
         });
     });
