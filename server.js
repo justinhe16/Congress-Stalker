@@ -63,7 +63,7 @@ app.get('/searchLegislator', function(req,res) {
                     twitter: data.results[i].twitter_id,
                     party: data.results[i].party
                 }
-            legislators.push(senator);
+                legislators.push(senator);
             }
 
             res.render('legislators', {zipcode: zipcode, legislators: legislators});
@@ -71,9 +71,8 @@ app.get('/searchLegislator', function(req,res) {
     });
 });
 
+
 app.get('/searchBills', function(req,res) {
-    console.log(req.query.first);
-    console.log(req.query.last);
     var first_name = req.query.first;
     var last_name = req.query.last;
     var bills = [];
@@ -99,7 +98,6 @@ app.get('/searchBills', function(req,res) {
             res.render('billResults', {first_name: first_name, last_name: last_name, bills: bills});
         });
     });
-
 });
 
 app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legislator information array
