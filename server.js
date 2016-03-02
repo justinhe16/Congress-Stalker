@@ -101,7 +101,8 @@ app.get('/searchBills', function(req,res) {
 });
 
 app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legislator information array
-    data = req.body
+    data = req.body;
+    console.log(req.body);
     db.run("INSERT INTO legislators (first_name, last_name, twitter, party) VALUES (?,?,?,?)",
         data.leg.first_name, data.leg.last_name, data.leg.twitter, data.leg.party,
   
@@ -110,8 +111,10 @@ app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legi
         }
     );
     var legId;
-    db.run("SELECT id from legislators WHERE first_name = "+data.leg.first_name+"AND last_name = "+data.leg.last_name, function(err, rows) {
-        if (err) { throw err;}
+    db.run("SELECT * FROM legislators WHERE first_name = ? AND last_name = ?",
+        data.leg.first_name, data.leg.last_name, 
+        function(err, rows) {
+            if (err) { throw err;}
         else {
             legId = rows[0].id;
         }
@@ -137,7 +140,7 @@ app.post('/saveBill', function(req,res) {//use AJAX
 
     );
     var billId;
-    db.run("SELECT id from bills WHERE name = "+data.bill.name, function(err, rows) {
+    db.run("SELECT id FROM bills WHERE name = "+data.bill.name, function(err, rows) {
         if (err) { throw err;}
         else {
             billId = rows[0].id;
@@ -156,7 +159,7 @@ app.post('/saveBill', function(req,res) {//use AJAX
 app.get('/viewSaved/:id', function(req,res) {
     var user_id = parseInt(req.params.id);
     var legIds = [];
-    db.run("SELECT leg_id from user_leg WHERE user_id = "+user_id, 
+    db.run("SELECT leg_id FROM user_leg WHERE user_id = "+user_id, 
         function(err, rows) {
             if (err) { throw err;}
             else {
@@ -167,7 +170,7 @@ app.get('/viewSaved/:id', function(req,res) {
         });
     legislators = [];
     for(i = 0; i < legIds.length; i++) {
-        db.run("SELECT * from legislators WHERE id ="+legIds[i],
+        db.run("SELECT * FROM legislators WHERE id ="+legIds[i],
             function(err, rows) {
                 if (err) { throw err;}
                 else {
@@ -177,7 +180,7 @@ app.get('/viewSaved/:id', function(req,res) {
     }//for
     ////////////////////////////////////////
     var billIds = [];
-    db.run("SELECT bill_id from user_bill WHERE user_id = "+user_id, 
+    db.run("SELECT bill_id FROM user_bill WHERE user_id = "+user_id, 
         function(err, rows) {
             if (err) { throw err;}
             else {
@@ -188,7 +191,7 @@ app.get('/viewSaved/:id', function(req,res) {
         });
     bills = [];
     for(i = 0; i < billIds.length; i++) {
-        db.run("SELECT * from bills WHERE id ="+billIds[i],
+        db.run("SELECT * FROM bills WHERE id ="+billIds[i],
             function(err, rows) {
                 if (err) { throw err;}
                 else {
