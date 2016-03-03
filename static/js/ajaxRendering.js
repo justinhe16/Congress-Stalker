@@ -25,6 +25,8 @@ $(document).ready(function(){
     	success: function() {
     		alert("success");
     	}
+	}).done(function() {
+		alert('success');
 	});
   });
 
@@ -48,6 +50,8 @@ $('.billsavebutton').click(function() {
     	success: function() {
     		alert("success");
     	}
+	}).done(function() {
+		alert('success');
 	});
 });
 

@@ -115,6 +115,7 @@ app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legi
 
             }//else1
             res.write("saved");
+            res.send();
         });//firstcheck
 
     function insertNewLeg() {
@@ -178,6 +179,8 @@ app.post('/saveBill', function(req,res) {//use AJAX
             else {
                 currentBill(rows[0]);
             }
+        res.write("saved");
+        res.send();
         }//else1
         
     });//firstcheck
@@ -222,7 +225,7 @@ app.post('/saveBill', function(req,res) {//use AJAX
     
     }//currentBill
     
-    res.write("saved");
+    
 });
 
 app.get('/viewSaved/:id', function(req,res) {
