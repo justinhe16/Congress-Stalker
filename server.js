@@ -146,18 +146,18 @@ app.post('/saveBill', function(req,res) {//use AJAX
 
     );
     var billId;
-    db.run("SELECT id FROM bills WHERE name = "+data.bill.name, function(err, rows) {
+    db.all("SELECT id FROM bills WHERE name = ?",data.bill.name, function(err, rows) {
         if (err) { throw err;}
         else {
-            billId = rows[0].id;
+            var billId = rows[0].id;
+            db.run("INSERT INTO user_bill (user_id, bill_id) VALUES (?,?)",
+            data.user_id, billId, function(err) {
+                if (err) { throw err;}
+            });
         }
         
     })
-    db.run("INSERT INTO user_bill (user_id, bill_id) VALUES (?,?)",
-        data.user_id, billId, function(err) {
-            if (err) { throw err;}
-        }
-    )
+    
     //add to user_bill
     res.write("saved");
 });
