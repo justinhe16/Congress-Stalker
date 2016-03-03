@@ -106,7 +106,7 @@ app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legi
         data.leg.first_name, data.leg.last_name, function(err, rows) {
             if (err) { throw err;}
             else {
-                if(rows === undefined) {
+                if(rows[0] === undefined) {
                     insertNewLeg();//function
                 }
                 else {
@@ -114,6 +114,7 @@ app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legi
                 }
 
             }//else1
+            res.write("saved");
         });//firstcheck
 
     function insertNewLeg() {
@@ -147,13 +148,22 @@ app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legi
     }//incertNewLeg
 
     function currentLeg(legId) {
-        db.run("INSERT INTO user_leg (user_id, leg_id) VALUES (?,?)",
-            data.user_id, legId, function(err) {
+        db.all("SELECT * FROM user_leg WHERE user_id = ? AND leg_id = ?", data.user_id, legId,
+            function(err, pairs) {
                 if (err) { throw err;}
-        });
+                else {
+                    if(pairs[0] === undefined) {
+                        db.run("INSERT INTO user_leg (user_id, leg_id) VALUES (?,?)",
+                            data.user_id, legId, function(err) {
+                            if (err) { throw err;}
+                        });
+                    }
+                }
+            });
+        
     }
     
-    res.write("saved");
+    
 
 });
 
@@ -162,7 +172,7 @@ app.post('/saveBill', function(req,res) {//use AJAX
     db.all("SELECT id FROM bills WHERE name = ?",data.bill.name, function(err, rows) {
         if (err) { throw err;}
         else {
-            if(rows === undefined) {
+            if(rows[0] === undefined) {
                 insertNewBill();
             }
             else {
@@ -196,10 +206,20 @@ app.post('/saveBill', function(req,res) {//use AJAX
     }//insertNewBill
 
     function currentBill(billId) {
-        db.run("INSERT INTO user_bill (user_id, bill_id) VALUES (?,?)",
-            data.user_id, billId, function(err) {
+
+        db.all("SELECT * FROM user_bill WHERE user_id = ? AND bill_id = ?", data.user_id, billId,
+            function(err, pairs) {
                 if (err) { throw err;}
-        });
+                else {
+                    if(pairs[0] === undefined) {
+                        db.run("INSERT INTO user_bill (user_id, bill_id) VALUES (?,?)",
+                            data.user_id, billId, function(err) {
+                            if (err) { throw err;}
+                        });
+                    }
+                }
+            });
+    
     }//currentBill
     
     res.write("saved");
