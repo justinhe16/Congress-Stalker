@@ -102,34 +102,56 @@ app.get('/searchBills', function(req,res) {
 
 app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legislator information array
     data = req.body;
-    db.run("INSERT INTO legislators (first_name, last_name, twitter, party) VALUES (?,?,?,?)",
-        data.leg.first_name, data.leg.last_name, data.leg.twitter, data.leg.party,
-  
-        function(err) {
+    db.all("SELECT * FROM legislators WHERE first_name = ? AND last_name = ?",
+        data.leg.first_name, data.leg.last_name, function(err, rows) {
             if (err) { throw err;}
-        }
-    );
+            else {
+                if(rows === undefined) {
+                    insertNewLeg();//function
+                }
+                else {
+                    currentLeg(rows[0].id)
+                }
+
+            }//else1
+        });//firstcheck
+
+    function insertNewLeg() {
+        db.run("INSERT INTO legislators (first_name, last_name, twitter, party) VALUES (?,?,?,?)",
+            data.leg.first_name, data.leg.last_name, data.leg.twitter, data.leg.party,
+  
+            function(err) {
+                if (err) { throw err;}
+            }
+        );
 
     
-    db.all("SELECT * FROM legislators WHERE first_name = ? AND last_name = ?",
-        data.leg.first_name, data.leg.last_name, 
-        function(err, row) {
+        db.all("SELECT * FROM legislators WHERE first_name = ? AND last_name = ?",
+            data.leg.first_name, data.leg.last_name, 
+            function(err, row) {
             
-            if (err) { 
-                throw err;
-                console.log(err);
-            }
-            else {
-                console.log("row: "+row[0]);
-                var legId = row[0].id;
-                db.run("INSERT INTO user_leg (user_id, leg_id) VALUES (?,?)",
-                data.user_id, legId, function(err) {
-                    if (err) { throw err;}
-                });
-            }
+                if (err) { 
+                    throw err;
+                    console.log(err);
+                }
+                else {
+                    var legId = row[0].id;
+                    db.run("INSERT INTO user_leg (user_id, leg_id) VALUES (?,?)",
+                    data.user_id, legId, function(err) {
+                        if (err) { throw err;}
+                    });
+                }
         
-    });
+        });
     
+    }//incertNewLeg
+
+    function currentLeg(legId) {
+        db.run("INSERT INTO user_leg (user_id, leg_id) VALUES (?,?)",
+            data.user_id, legId, function(err) {
+                if (err) { throw err;}
+        });
+    }
     
     res.write("saved");
 
@@ -137,28 +159,49 @@ app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legi
 
 app.post('/saveBill', function(req,res) {//use AJAX
     data = req.body;
-    db.run("INSERT INTO bills (name, date, sponsor_first_name, sponsor_last_name) VALUES (?,?,?,?)",
-        data.bill.name, data.bill.date, data.bill.sponsor_first_name, data.bill.sponsor_last_name,
-  
-        function(err) {
-            if (err) { throw err;}
-        }
-
-    );
-    var billId;
     db.all("SELECT id FROM bills WHERE name = ?",data.bill.name, function(err, rows) {
         if (err) { throw err;}
         else {
-            var billId = rows[0].id;
-            db.run("INSERT INTO user_bill (user_id, bill_id) VALUES (?,?)",
+            if(rows === undefined) {
+                insertNewBill();
+            }
+            else {
+                currentBill(rows[0]);
+            }
+        }//else1
+        
+    });//firstcheck
+
+    function insertNewBill() {
+        db.run("INSERT INTO bills (name, date, sponsor_first_name, sponsor_last_name) VALUES (?,?,?,?)",
+            data.bill.name, data.bill.date, data.bill.sponsor_first_name, data.bill.sponsor_last_name,
+  
+            function(err) {
+                if (err) { throw err;}
+            }
+
+        );
+        var billId;
+        db.all("SELECT id FROM bills WHERE name = ?",data.bill.name, function(err, row) {
+            if (err) { throw err;}
+            else {
+                var billId = row[0].id;
+                db.run("INSERT INTO user_bill (user_id, bill_id) VALUES (?,?)",
+                data.user_id, billId, function(err) {
+                    if (err) { throw err;}
+                });
+            }
+        
+        });//add to user_bill
+    }//insertNewBill
+
+    function currentBill(billId) {
+        db.run("INSERT INTO user_bill (user_id, bill_id) VALUES (?,?)",
             data.user_id, billId, function(err) {
                 if (err) { throw err;}
-            });
-        }
-        
-    })
+        });
+    }//currentBill
     
-    //add to user_bill
     res.write("saved");
 });
 
