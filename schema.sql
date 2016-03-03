@@ -13,7 +13,7 @@ CREATE TABLE users (
 CREATE TABLE legislators (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	first_name TEXT,
-	last_name, TEXT,
+	last_name TEXT,
 	twitter TEXT,
 	party TEXT
 );

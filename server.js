@@ -102,7 +102,6 @@ app.get('/searchBills', function(req,res) {
 
 app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legislator information array
     data = req.body;
-    console.log(req.body);
     db.run("INSERT INTO legislators (first_name, last_name, twitter, party) VALUES (?,?,?,?)",
         data.leg.first_name, data.leg.last_name, data.leg.twitter, data.leg.party,
   
@@ -110,21 +109,28 @@ app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legi
             if (err) { throw err;}
         }
     );
-    var legId;
-    db.run("SELECT * FROM legislators WHERE first_name = ? AND last_name = ?",
+
+    
+    db.all("SELECT * FROM legislators WHERE first_name = ? AND last_name = ?",
         data.leg.first_name, data.leg.last_name, 
-        function(err, rows) {
-            if (err) { throw err;}
-        else {
-            legId = rows[0].id;
-        }
+        function(err, row) {
+            
+            if (err) { 
+                throw err;
+                console.log(err);
+            }
+            else {
+                console.log("row: "+row[0]);
+                var legId = row[0].id;
+                db.run("INSERT INTO user_leg (user_id, leg_id) VALUES (?,?)",
+                data.user_id, legId, function(err) {
+                    if (err) { throw err;}
+                });
+            }
         
-    })
-    db.run("INSERT INTO user_leg (user_id, leg_id) VALUES (?,?)",
-        data.user_id, legId, function(err) {
-            if (err) { throw err;}
-        }
-    )
+    });
+    
+    
     res.write("saved");
 
 });

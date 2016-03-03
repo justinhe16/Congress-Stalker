@@ -7,7 +7,7 @@ $(document).ready(function(){
  
  $('.savebutton').click(function() {
   	var postData = {
-		user_id: 0,
+		user_id: 1,
 		leg: {
 			first_name: $(this).attr('first-name'),
 			last_name: $(this).attr('last-name'),
