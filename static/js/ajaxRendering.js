@@ -31,13 +31,21 @@ $(document).ready(function(){
   });
 
 $('.billsavebutton').click(function() {
+	var name;
+	if($(this).attr('shortname') == null) {
+		name = $(this).attr('name');
+	}
+	else {
+		name = $(this).attr('shortname');
+	}
+
 	var postData = {
-		user_id: user_id,
+		user_id: 1,
 		bill: {
-			name: $(this).attr('name'),
+			name: name,
 			date: $(this).attr('date'),
-			sponsor_first_name: $(this).attr('sponsor_first_name'),
-			sponsor_last_name: $(this).attr('sponsor_last_name')
+			sponsor_first_name: $(this).attr('sponsor-first-name'),
+			sponsor_last_name: $(this).attr('sponsor-last-name')
 		}
 	}
 	postString = JSON.stringify(postData);

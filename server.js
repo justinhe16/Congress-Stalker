@@ -178,14 +178,14 @@ app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legi
 
 app.post('/saveBill', function(req,res) {//use AJAX
     data = req.body;
-    db.all("SELECT id FROM bills WHERE name = ?",data.bill.name, function(err, rows) {
+    db.all("SELECT * FROM bills WHERE name = ?",data.bill.name, function(err, rows) {
         if (err) { throw err;}
         else {
             if(rows[0] === undefined) {
                 insertNewBill();
             }
             else {
-                currentBill(rows[0]);
+                currentBill(rows[0].id);
             }
         res.write("saved");
         res.send();
@@ -203,7 +203,7 @@ app.post('/saveBill', function(req,res) {//use AJAX
 
         );
         var billId;
-        db.all("SELECT id FROM bills WHERE name = ?",data.bill.name, function(err, row) {
+        db.all("SELECT * FROM bills WHERE name = ?",data.bill.name, function(err, row) {
             if (err) { throw err;}
             else {
                 var billId = row[0].id;
