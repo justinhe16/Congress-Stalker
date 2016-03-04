@@ -43,6 +43,14 @@ app.get('/', function(req, res){
     res.render('index.ejs');
 });
 
+app.get('/login', function(req,res){
+    res.render('login.ejs');
+});
+
+app.get('/register', function(req,res){
+    res.render('register.ejs');
+});
+
 app.get('/searchLegislator', function(req,res) {
     console.log("zip: "+req.query.zip);
     var zipcode = req.query.zip;//parseInt(req.params.zip);
