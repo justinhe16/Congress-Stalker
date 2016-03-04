@@ -14,10 +14,14 @@
               <p><%= bills[j].date %></p>
             </div>
             <div class="card-action">
-            <a class="blue waves-effect waves-light btn">Save Bill</a>
+            <a name='' date ='<%=bills[j].date%>' sponsor-first-name="<%=first_name%>" sponsor-last-name="<%=last_name%>" class="billsavebutton blue waves-effect waves-light btn">Save Bill</a>
             </div>
           </div>
         </div>
         <% } %>
       </div>
 </div>
+
+<script>
+$('.billsavebutton').attr(name).($('.card-title').text());
+</script>
