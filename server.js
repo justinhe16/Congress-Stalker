@@ -313,6 +313,7 @@ app.post('/saveBill', function(req,res) {//use AJAX
 app.get('/viewSaved', function(req,res) {
     var user_id = req.session.user_id;
     var legIds = [];
+    var billIds = [];
     db.all("SELECT * FROM user_leg WHERE user_id = ?", user_id, 
         function(err, rows) {
             if (err) { throw err;}
@@ -320,41 +321,66 @@ app.get('/viewSaved', function(req,res) {
                 for (i = 0; i < rows.length; i++) {
                     legIds.push(rows[i].leg_id);
                 }
+                selectLeg();
+                
             }
         });
-    legislators = [];
-    for(i = 0; i < legIds.length; i++) {
-        db.all("SELECT * FROM legislators WHERE id =?", legIds[i],
-            function(err, rows) {
-                if (err) { throw err;}
-                else {
-                    legislators.push(rows[0]);
-                }
+    function selectLeg() {
+        legislators = [];
+        for(i = 0; i < legIds.length; i++) {
+            db.all("SELECT * FROM legislators WHERE id =?", legIds[i],
+                function(err, rows2) {
+                    if (err) { throw err;}
+                    else {
+                        legislators.push(rows2[0]);
+
+                    }
             });
-    }//for
+        }//for
+        selectBillIds();
+    }
     ////////////////////////////////////////
-    var billIds = [];
-    db.all("SELECT * FROM user_bill WHERE user_id = ?", user_id, 
-        function(err, rows) {
+    function selectBillIds() {
+        
+        db.all("SELECT * FROM user_bill WHERE user_id = ?", user_id, 
+        function(err, rows3) {
             if (err) { throw err;}
             else {
-                for (i = 0; i < rows.length; i++) {
-                    billIds.push(rows[i].leg_id);
+                for (i = 0; i < rows3.length; i++) {
+                    billIds.push(rows3[i].bill_id);
                 }
+                selectBills();
+                
             }
         });
-    bills = [];
-    for(i = 0; i < billIds.length; i++) {
-        db.all("SELECT * FROM bills WHERE id =? ",billIds[i],
-            function(err, rows) {
-                if (err) { throw err;}
-                else {
-                    bills.push(rows[0]);
-                }
+    }
+    function selectBills() {
+        bills = [];
+        if(billIds.length == 0) {
+            renderPage();
+        }
+        
+        for(i = 0; i < billIds.length; i++) {
+            db.all("SELECT * FROM bills WHERE id = ?",billIds[i],
+                function(err, rows4) {
+                    if (err) { throw err;}
+                    else {
+                        bills.push(rows4[0]);
+                        if(rows4[0].id == billIds[billIds.length-1]) {
+                            renderPage();
+                        }
+                    }
+
             });
-    }//for
-    res.render("userPage", {welcome: req.session.username, legislators: legislators, bills: bills});
-});
+        }//for
+        
+    }//selectBills
+    function renderPage() {
+        console.log(legislators);
+        console.log(bills);
+        res.render("userPage", {welcome: req.session.username, legislators: legislators, bills: bills});
+    }
+});//newViewSaved
 
 app.delete('/deleteLeg/:id', function(req,res) {
     ID = parseInt(req.params.id);
