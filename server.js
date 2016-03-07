@@ -353,7 +353,6 @@ app.get('/viewSaved', function(req,res) {
                 }
             });
     }//for
-    console.log(legislators);
     res.render("userPage", {welcome: req.session.username, legislators: legislators, bills: bills});
 });
 
