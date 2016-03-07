@@ -21,23 +21,24 @@ $(document).ready(function(){
 	    data : postString,//stringified object that is being sent
 	    contentType: "application/json; charset=utf-8",
     	dataType: "json",
-    	success: function() {
-    		alert("success");
+    	success: function(data) {
+        if(typeof data.redirect == 'string'){
+          window.location = data.redirect + "?message=" + data.message;
+        }
     	}
 	}).done(function() {
-		alert('success');
 	});
   });
 
 $('.billsavebutton').click(function() {
 	var name;
-	if($(this).attr('shortname') == null) {
+	if(!$(this).attr('shortname')) {
 		name = $(this).attr('name');
 	}
 	else {
 		name = $(this).attr('shortname');
 	}
-
+  console.log(name);
 	var postData = {
 		bill: {
 			name: name,
@@ -53,11 +54,12 @@ $('.billsavebutton').click(function() {
 	    data : postString,//stringified object that is being sent
 	    contentType: "application/json; charset=utf-8",
     	dataType: "json",
-    	success: function() {
-    		alert("success");
+    	success: function(data) {
+    		if(typeof data.redirect == 'string'){
+          window.location = data.redirect + "?message=" + data.message;
+        }
     	}
 	}).done(function() {
-		alert('success');
 	});
 });
 

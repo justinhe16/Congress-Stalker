@@ -49,7 +49,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/login', function(req,res){
-    res.render('login.ejs', {message: ''});
+    res.render('login.ejs', {message: req.query.message});
 });
 
 app.post('/login', function(req, res){
@@ -73,7 +73,7 @@ app.post('/login', function(req, res){
 });
 
 app.get('/register', function(req,res){
-    res.render('register.ejs', {message: ''});
+    res.render('register.ejs', {message: req.query.message});
 });
 
 app.post('/register', function(req, res){ //if the users doesn't already exist in the database, this function saves the form data sent as a new user.
@@ -176,7 +176,7 @@ app.get('/searchBills', function(req,res) {
 
 app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legislator information array
     if (!req.session.username){ //if you're not logged in, you can't save a legislator; make sure you register/login!
-    res.redirect('/login');
+    res.send({redirect: '/login', message: 'You need login or register before you can save legislators.'});
     }
     else {
     data = req.body;
@@ -247,8 +247,8 @@ app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legi
 });
 
 app.post('/saveBill', function(req,res) {//use AJAX
-    if (req.session.username === undefined){
-    res.render('register.ejs', {message: 'You can\'t save bills without an account! Make one here (or login if you already have one).' });
+    if (!req.session.username){ //if you're not logged in, you can't save a legislator; make sure you register/login!
+    res.send({redirect: '/login', message: 'You need login or register before you can save bills.'});
     }
     else {
     data = req.body;
@@ -310,8 +310,8 @@ app.post('/saveBill', function(req,res) {//use AJAX
     
 });
 
-app.get('/viewSaved/:id', function(req,res) {
-    var user_id = parseInt(req.params.id);
+app.get('/viewSaved', function(req,res) {
+    var user_id = req.session.user_id;
     var legIds = [];
     db.all("SELECT leg_id FROM user_leg WHERE user_id = "+user_id, 
         function(err, rows) {
@@ -353,7 +353,8 @@ app.get('/viewSaved/:id', function(req,res) {
                 }
             });
     }//for
-    res.render("userPage", {legislators: legislators, bills: bills});
+    console.log(legislators);
+    res.render("userPage", {welcome: req.session.username, legislators: legislators, bills: bills});
 });
 
 app.delete('/deleteLeg/:id', function(req,res) {

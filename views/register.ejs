@@ -4,7 +4,7 @@
 <h2>Register</h2>
 <div class="white-text row">
     <form method = "POST" role="form" type = "submit" action = "/register" class="col s12">
-          <% if (message.length > 0) { %>
+          <% if (typeof message != 'undefined' && message.length > 0) { %>
         <div class="card-panel white">
           <span class="black-text"><%= message %></span>
         </div>
