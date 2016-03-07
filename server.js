@@ -40,15 +40,72 @@ app.use('/bower_components', express.static("bower_components")); // sets standa
 
 
 app.get('/', function(req, res){
+    if (req.session.username){
+    res.render('index.ejs', {welcome: req.session.username});  
+    }
+    else {
     res.render('index.ejs');
+    }
 });
 
 app.get('/login', function(req,res){
-    res.render('login.ejs');
+    res.render('login.ejs', {message: ''});
+});
+
+app.post('/login', function(req, res){
+    data = req.body;
+    console.log(data);
+    db.all("SELECT * FROM users WHERE username = ? AND password = ?",
+        data.username, data.password, function(err, rows) {
+            if (err) { throw err; }
+            else {
+                if(rows[0] === undefined) {
+                    res.render('login.ejs', {message: 'That username-password combination does not exist in our database.'});
+                }
+                else{
+                    console.log(data.username);
+                    req.session.username = data.username;
+                    req.session.user_id = rows[0].id;
+                    res.redirect('/');
+                }
+            }
+        });
 });
 
 app.get('/register', function(req,res){
-    res.render('register.ejs');
+    res.render('register.ejs', {message: ''});
+});
+
+app.post('/register', function(req, res){ //if the users doesn't already exist in the database, this function saves the form data sent as a new user.
+    data = req.body;
+    if (data.password != data.confirm_password){
+        res.render('register.ejs', {message: 'Your passwords didn\'t match; try again.'});
+    }
+    else {
+    db.all("SELECT * FROM users WHERE username = ?",
+        data.username, function(err, rows) {
+            if (err) { throw err;}
+            else {
+                if(rows[0] === undefined) {
+                    insertNewUser();
+                }
+                else {
+                    res.render('register.ejs', {message: 'That username is already taken.'});
+                }
+            }
+        });
+
+    function insertNewUser() {
+        db.run("INSERT INTO users (userName, password) VALUES (?,?)",
+            data.username, data.password,
+  
+            function(err) {
+                if (err) { throw err;}
+                res.render('login.ejs', {message: 'Congratulations! You made an account. Log in to access features.'});
+            }
+        );
+    }//incertNewUser
+    }//else
 });
 
 app.get('/searchLegislator', function(req,res) {
@@ -73,8 +130,12 @@ app.get('/searchLegislator', function(req,res) {
                 }
                 legislators.push(senator);
             }
-
+            if (req.session.username){
+            res.render('legislators', {welcome: req.session.username, zipcode: zipcode, legislators: legislators});
+            }
+            else {
             res.render('legislators', {zipcode: zipcode, legislators: legislators});
+        }
         });//end
     });
 });
@@ -103,12 +164,21 @@ app.get('/searchBills', function(req,res) {
             }
             bills.push(bill);
         }
+        if (req.session.username){
+            res.render('billResults', {welcome: req.session.username, first_name: first_name, last_name: last_name, bills: bills});
+        }
+        else {
             res.render('billResults', {first_name: first_name, last_name: last_name, bills: bills});
+        }
         });
     });
 });
 
 app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legislator information array
+    if (!req.session.username){ //if you're not logged in, you can't save a legislator; make sure you register/login!
+    res.redirect('/login');
+    }
+    else {
     data = req.body;
     db.all("SELECT * FROM legislators WHERE first_name = ? AND last_name = ?",
         data.leg.first_name, data.leg.last_name, function(err, rows) {
@@ -118,7 +188,7 @@ app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legi
                     insertNewLeg();//function
                 }
                 else {
-                    currentLeg(rows[0].id)
+                    currentLeg(rows[0].id);
                 }
 
             }//else1
@@ -147,23 +217,22 @@ app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legi
                 else {
                     var legId = row[0].id;
                     db.run("INSERT INTO user_leg (user_id, leg_id) VALUES (?,?)",
-                    data.user_id, legId, function(err) {
+                    req.session.user_id, legId, function(err) {
                         if (err) { throw err;}
                     });
                 }
         
         });
-    
     }//incertNewLeg
 
     function currentLeg(legId) {
-        db.all("SELECT * FROM user_leg WHERE user_id = ? AND leg_id = ?", data.user_id, legId,
+        db.all("SELECT * FROM user_leg WHERE user_id = ? AND leg_id = ?", req.session.user_id, legId,
             function(err, pairs) {
                 if (err) { throw err;}
                 else {
                     if(pairs[0] === undefined) {
                         db.run("INSERT INTO user_leg (user_id, leg_id) VALUES (?,?)",
-                            data.user_id, legId, function(err) {
+                            req.session.user_id, legId, function(err) {
                             if (err) { throw err;}
                         });
                     }
@@ -171,12 +240,17 @@ app.post('/saveLegislator', function(req,res) {//use AJAX: send user_id and legi
             });
         
     }
+}
     
     
 
 });
 
 app.post('/saveBill', function(req,res) {//use AJAX
+    if (req.session.username === undefined){
+    res.render('register.ejs', {message: 'You can\'t save bills without an account! Make one here (or login if you already have one).' });
+    }
+    else {
     data = req.body;
     db.all("SELECT * FROM bills WHERE name = ?",data.bill.name, function(err, rows) {
         if (err) { throw err;}
@@ -208,7 +282,7 @@ app.post('/saveBill', function(req,res) {//use AJAX
             else {
                 var billId = row[0].id;
                 db.run("INSERT INTO user_bill (user_id, bill_id) VALUES (?,?)",
-                data.user_id, billId, function(err) {
+                req.session.user_id, billId, function(err) {
                     if (err) { throw err;}
                 });
             }
@@ -218,13 +292,13 @@ app.post('/saveBill', function(req,res) {//use AJAX
 
     function currentBill(billId) {
 
-        db.all("SELECT * FROM user_bill WHERE user_id = ? AND bill_id = ?", data.user_id, billId,
+        db.all("SELECT * FROM user_bill WHERE user_id = ? AND bill_id = ?", req.session.user_id, billId,
             function(err, pairs) {
                 if (err) { throw err;}
                 else {
                     if(pairs[0] === undefined) {
                         db.run("INSERT INTO user_bill (user_id, bill_id) VALUES (?,?)",
-                            data.user_id, billId, function(err) {
+                            req.session.user_id, billId, function(err) {
                             if (err) { throw err;}
                         });
                     }
@@ -232,7 +306,7 @@ app.post('/saveBill', function(req,res) {//use AJAX
             });
     
     }//currentBill
-    
+    }
     
 });
 
@@ -294,6 +368,10 @@ app.delete('deleteBill/:id', function(req,res) {
     db.run("DELETE FROM user_bill WHERE bill_id = ?", ID, function(err) {
         if (err) { throw err;}
     });
+});
+
+app.get('/logout', function(req, res) {
+
 });
 
 // launch ======================================================================

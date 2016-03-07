@@ -18,10 +18,19 @@
 <nav>
     <div class="nav-wrapper">
       <a href="/" style="padding-left: 0.5em" class="brand-logo left"> Congress Stalker</a>
+      <% if (typeof welcome == 'undefined'){ %>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
         <li><a href="/register"><i class="material-icons left">perm_identity</i>Register</a></li>
         <li><a href="/login"><i class="material-icons left">input</i>Login</a></li>
       </ul>
+      <% } else { %>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li style="padding-right: 1em"><b>Welcome, <%= welcome %>!</b></li>
+        <li><a href="/register"><i class="material-icons left">recent_actors</i>My Legislators</a></li>
+        <li><a href="/login"><i class="material-icons left">subtitles</i>My Bills</a></li>
+        <li><a href="/logout"><i class="material-icons left">power_settings_new</i>Logout</a></li>
+      </ul>
+      <% } %>
     </div>
   </nav>
 </body>
