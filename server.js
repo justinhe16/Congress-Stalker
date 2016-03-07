@@ -313,7 +313,7 @@ app.post('/saveBill', function(req,res) {//use AJAX
 app.get('/viewSaved/:id', function(req,res) {
     var user_id = parseInt(req.params.id);
     var legIds = [];
-    db.run("SELECT leg_id FROM user_leg WHERE user_id = "+user_id, 
+    db.all("SELECT leg_id FROM user_leg WHERE user_id = "+user_id, 
         function(err, rows) {
             if (err) { throw err;}
             else {
@@ -324,7 +324,7 @@ app.get('/viewSaved/:id', function(req,res) {
         });
     legislators = [];
     for(i = 0; i < legIds.length; i++) {
-        db.run("SELECT * FROM legislators WHERE id ="+legIds[i],
+        db.all("SELECT * FROM legislators WHERE id ="+legIds[i],
             function(err, rows) {
                 if (err) { throw err;}
                 else {
@@ -334,7 +334,7 @@ app.get('/viewSaved/:id', function(req,res) {
     }//for
     ////////////////////////////////////////
     var billIds = [];
-    db.run("SELECT bill_id FROM user_bill WHERE user_id = "+user_id, 
+    db.all("SELECT bill_id FROM user_bill WHERE user_id = "+user_id, 
         function(err, rows) {
             if (err) { throw err;}
             else {
@@ -345,7 +345,7 @@ app.get('/viewSaved/:id', function(req,res) {
         });
     bills = [];
     for(i = 0; i < billIds.length; i++) {
-        db.run("SELECT * FROM bills WHERE id ="+billIds[i],
+        db.all("SELECT * FROM bills WHERE id ="+billIds[i],
             function(err, rows) {
                 if (err) { throw err;}
                 else {
