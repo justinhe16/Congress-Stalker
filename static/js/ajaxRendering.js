@@ -5,7 +5,7 @@ $(document).ready(function(){
    window.location.href = "/searchBills?first=" + first_name + "&last=" + last_name;
 });
  
- $('.savebutton').click(function() {
+ $('.savebutton').click(function() { //saves a legislator 
   	var postData = {
 		leg: {
 			first_name: $(this).attr('first-name'),
@@ -28,6 +28,19 @@ $(document).ready(function(){
     	}
 	}).done(function() {
 	});
+  });
+
+  $('.deletebutton').click(function() { //deletes a legislator
+  $.ajax({
+      url : "/deleteLeg/" + $(this).attr('id'),
+      type: "DELETE",
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      success: function(data) {
+      }
+  }).done(function() {
+  });
+  window.location.reload();
   });
 
 $('.billsavebutton').click(function() {
@@ -62,6 +75,20 @@ $('.billsavebutton').click(function() {
 	}).done(function() {
 	});
 });
+
+  $('.billdeletebutton').click(function() { //deletes a bill
+  $.ajax({
+      url : "/deleteBill/" + $(this).attr('id'),
+      type: "DELETE",
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      success: function(data) {
+      }
+  }).done(function() {
+  });
+  window.location.reload();
+  });
+
 
 });
 

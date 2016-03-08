@@ -384,20 +384,25 @@ app.get('/viewSaved', function(req,res) {
 
 app.delete('/deleteLeg/:id', function(req,res) {
     ID = parseInt(req.params.id);
-    db.run("DELETE FROM user_leg WHERE leg_id = ?", ID, function(err) {
+    userID = req.session.user_id;
+    db.run("DELETE FROM user_leg WHERE leg_id = ? AND user_id = ?", ID, userID, function(err) {
         if (err) { throw err;}
+        else { res.end(); }
     });
-})
+});
 
-app.delete('deleteBill/:id', function(req,res) {
+app.delete('/deleteBill/:id', function(req,res) {
     ID = parseInt(req.params.id);
-    db.run("DELETE FROM user_bill WHERE bill_id = ?", ID, function(err) {
+    userID = req.session.user_id;
+    db.run("DELETE FROM user_bill WHERE bill_id = ? AND user_id = ?", ID, userID, function(err) {
         if (err) { throw err;}
+        else { res.end(); }
     });
 });
 
 app.get('/logout', function(req, res) {
-
+    req.session.destroy();
+    res.redirect('/');
 });
 
 // launch ======================================================================

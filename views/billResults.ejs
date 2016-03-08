@@ -4,8 +4,8 @@
   <div class="col">
       <% for(var j = 0; j < bills.length; j++) {  %>
         <div class="col s12 m6">
-          <div class="card blue darken-1">
-            <div class="card-content white-text">
+          <div class="card white darken-1">
+            <div class="card-content black-text">
               <% if (bills[j].shortname == null) { %>
               <span class="card-title"><%= bills[j].name %></span>
               <% } else { %>
@@ -14,7 +14,7 @@
               <p><%= bills[j].date %></p>
             </div>
             <div class="card-action">
-            <a name='<%=bills[j].name%>' shortname='<%=bills[j].shortname%>' date ='<%=bills[j].date%>' sponsor-first-name="<%=first_name%>" sponsor-last-name="<%=last_name%>" class="billsavebutton blue waves-effect waves-light btn">Save Bill</a>
+            <a name='<%=bills[j].name%>' shortname='<%=bills[j].shortname%>' date ='<%=bills[j].date%>' sponsor-first-name="<%=first_name%>" sponsor-last-name="<%=last_name%>" class="billsavebutton white black-text waves-effect waves-light btn">Save Bill</a>
             </div>
           </div>
         </div>
