@@ -4,7 +4,8 @@
   "description": "a web-based application to track your congressmen.",
   "main": "index.html",
   "scripts": {
-    "test": "node server.js"
+    "test": "node server.js",
+    "postinstall": "bower install"
   },
   "repository": {
     "type": "git",
